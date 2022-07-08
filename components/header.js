@@ -1,5 +1,5 @@
 import { StyleSheet, View, TouchableHighlight, Animated, Image } from 'react-native';
-import { HEADER_HEIGHT, PADDING } from './constant';
+import { HEADER_HEIGHT, PADDING, BOTTOM_SCROLL_PADDING, GRAY } from './constant';
 import Icon from '@expo/vector-icons/Ionicons';
 
 export default function Header(props) {
@@ -27,8 +27,7 @@ export default function Header(props) {
         transform: [
           {translateY: translateY}
         ],
-        borderBottomColor: '#e9e9f1', borderBottomWidth: 1,
-        backgroundColor: 'white',
+        borderBottomColor: GRAY, borderBottomWidth: 1,
         paddingTop: PADDING,
         paddingBottom: PADDING,
       }}>
@@ -40,9 +39,8 @@ export default function Header(props) {
           {
             useNativeDriver: true,
             listener: (event) => {
-              let padding = 10;
               let maxOffset = event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height;
-              if (event.nativeEvent.contentOffset.y >= maxOffset + padding) {
+              if (event.nativeEvent.contentOffset.y >= maxOffset + BOTTOM_SCROLL_PADDING) {
                 try {
                   props.onBottomScroll();
                 } catch {}

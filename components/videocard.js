@@ -6,7 +6,7 @@ export default function VideoCard(props) {
   const [ channelInfo, setChannelInfo ] = useState({});
   useEffect(() => {
     fetchChannel(props.channelId, setChannelInfo);
-  }, []);
+  }, [props.channelId]);
   return (
     <TouchableHighlight
       style={{paddingBottom: 12}}
@@ -33,13 +33,11 @@ export default function VideoCard(props) {
 }
 
 async function fetchChannel(channelId, setState) {
-  console.log('fetching channel');
   var api_url = API_URL
     + 'channels?part=snippet%2CcontentDetails%2Cstatistics&id=' + channelId + '&key='
     + API_KEY;
   var queries = await fetch(api_url).then(response => response.json()).then(json => json['items'][0]);
   setState(queries);
-  console.log(channelId);
 }
 
 function VideoInfo(props) {
@@ -53,7 +51,7 @@ function VideoInfo(props) {
           <Text style={styles.title} numberOfLines={2} ellipSizeMode="tail">
             {props.title}
           </Text>
-          <Text style={styles.info} numberOfLines={1} ellipSizeMode="tail">
+          <Text style={styles.info} numberOfLines={2} ellipSizeMode="tail">
             {props.channel + ' • ' + props.views + ' • ' + props.date}
           </Text>
         </View>
