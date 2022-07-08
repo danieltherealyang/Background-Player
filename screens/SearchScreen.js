@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { SafeAreaView, View, Text, ScrollView } from 'react-native';
 import SearchBar from '../components/searchbar';
-import VideoCard from '../components/videocard';
+import { MappedCards } from '../components/videocard';
+import { GLOBAL_STYLES } from '../components/constant';
 
 const array = [];
 for (let i = 0; i < 20; i++) {
@@ -14,14 +15,14 @@ for (let i = 0; i < 20; i++) {
 
 export default function SearchScreen({ route, navigation }) {
   const {backScreen} = route.params;
-  var [ componentArray, setComponentArray ] = useState([]);
+  const [ queries, setQueries ] = useState([]);
   console.log('Search Screen rendering');
+  const videoCards = MappedCards(queries);
   return (
-    <SafeAreaView>
-      <SearchBar setComponents={setComponentArray} backHandle={() => navigation.navigate(backScreen)}/>
-      <ScrollView style={{width: '100%', height: '100%', borderColor: 'red', borderWidth: 0}}>
-        <VideoCard source={"https://i.ytimg.com/vi/UkYIuh68SvE/hqdefault.jpg"}/>
-        {componentArray}
+    <SafeAreaView style={GLOBAL_STYLES.safeareaview}>
+      <SearchBar setState={setQueries} backHandle={() => navigation.navigate(backScreen)}/>
+      <ScrollView>
+        {videoCards}
       </ScrollView>
     </SafeAreaView>
   );

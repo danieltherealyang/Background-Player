@@ -1,60 +1,43 @@
 import { useState, useEffect } from 'react';
-import { StyleSheet, SafeAreaView, View, Text } from 'react-native';
-import VideoCard from '../components/videocard';
+import { StyleSheet, SafeAreaView } from 'react-native';
+import { MappedCards } from '../components/videocard';
 import Header from '../components/header';
+import { GLOBAL_STYLES } from '../components/constant';
 import { API_URL, API_KEY } from '../credentials/api_cred';
-
-const jsonArray = [];
-for (let i = 0; i < 20; i++) {
-  jsonArray.push(
-    <View style={{padding: 20}} key={i}>
-      <Text>{i}</Text>
-    </View>
-  );
-}
 
 export default function HomeScreen({ navigation }) {
   console.log('Home Screen rendering');
   const [ trending, setTrending ] = useState([]);
+  const [ tokenArray, setTokenArray ] = useState(new Set());
+  const [ nextPageToken, setNextPageToken ] = useState("");
   useEffect(() => {
-    fetchTrending(setTrending);
+    fetchTrending(setTrending, tokenArray, setTokenArray, nextPageToken, setNextPageToken);
   }, []);
-  const trendingPage = Trending(trending);
+  const trendingPage = MappedCards(trending);
   return (
-    <SafeAreaView>
-      <Header searchHandle={() => navigation.navigate("Search", {backScreen: "Home"})}>
+    <SafeAreaView style={GLOBAL_STYLES.safeareaview}>
+      <Header
+        searchHandle={() => navigation.navigate("Search", {backScreen: "Home"})}
+        onBottomScroll={() => {}}//fetchTrending(setTrending, tokenArray, setTokenArray, nextPageToken, setNextPageToken)}
+      >
         {trendingPage}
       </Header>
     </SafeAreaView>
   );
 }
 
-async function fetchTrending(setState) {
-  console.log('fetching Trending');
+async function fetchTrending(setState, tokenArray, setTokenArray, pageToken, setPageToken) {
   var api_url = API_URL
-    + 'videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&regionCode=US&key='
+    + 'videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&regionCode=US&maxResults=10&key='
     + API_KEY;
-  var queries = await fetch(api_url).then(response => response.json()).then(json => json['items']);
-  console.log(queries);
-  setState(queries);
-}
-
-function Trending(jsonArray) {
-  return (
-    <View>
-      {jsonArray.map((video, index) => 
-        <VideoCard
-          key={index}
-          thumbnail={video['snippet']['thumbnails']['high']['url']}
-          title={video['snippet']['title']}
-          channel={video['snippet']['channelTitle']}
-          channelId={video['snippet']['channelId']}
-          views={video['statistics']['viewCount']}
-          date={video['snippet']['publishedAt']}
-        />
-      )}
-    </View>
-  );
+  if (pageToken)
+    if (tokenArray.has(pageToken))
+      return;
+    api_url += '&pageToken=' + pageToken;
+    setTokenArray(tokenArray.add(pageToken));
+  var json = await fetch(api_url).then(response => response.json());
+  setState((prevState) => prevState.concat(json['items']));
+  setPageToken(json['nextPageToken']);
 }
 
 const styles = StyleSheet.create({

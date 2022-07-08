@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Keyboard, StyleSheet, View, Text, TextInput, TouchableHighlight } from 'react-native';
 import Icon from '@expo/vector-icons/Ionicons';
+import { API_KEY, API_URL } from '../credentials/api_cred';
+import { PADDING } from './constant';
 
 export default function SearchBar(props) {
   const HEADER_HEIGHT = 40;
@@ -10,9 +12,12 @@ export default function SearchBar(props) {
   useEffect(() => {
     suggestedQueries(query, setQuerySuggest);
   }, [query]);
+  useEffect(() => {
+    fetchQuery(props.setState);
+  }, []);
   const backHandle = (barFocused) ? () => {Keyboard.dismiss()} : props.backHandle;
   return (
-    <View style={{width: "100%"}}>
+    <View style={{width: "100%", paddingTop: PADDING, paddingBottom: PADDING}}>
         <StaticHeader
           onFocus={() => setBarFocused(true)} 
           onBlur={() => setBarFocused(false)}
@@ -22,13 +27,24 @@ export default function SearchBar(props) {
           searchHandle={() => {}} 
           closeHandle={() => setQuery("")}
         />
-        <View style={{borderColor: 'red', borderWidth: 0}}>
+        <View>
           {barFocused && querySuggest.map((suggestion, index) => 
-            <QueryRow key={index} query={suggestion} setComponents={props.setComponents} setState={setQuery} length={query.length}/>
+            <QueryRow key={index} query={suggestion} setState={props.setState} setState={setQuery} length={query.length}/>
           )}
         </View>
     </View>
   );
+}
+
+async function fetchQuery(setState) {
+  var videoIds = searchQueries['items'].map((video) => video['id']['videoId']).join('%2C');
+  var vidlist_url = API_URL
+    + 'videos?part=snippet%2CcontentDetails%2Cstatistics'
+    + '&id=' + videoIds
+    + '&key=' + API_KEY;
+  var json = await fetch(vidlist_url).then(response => response.json());
+  setState(json['items']);
+  console.log(json);
 }
 
 const iconSize = 25;
@@ -41,7 +57,11 @@ function QueryRow(props) {
       style={{paddingBottom: 8, paddingTop: 8}}
       activeOpacity={0.6}
       underlayColor="#DDDDDD"
-      onPress={() => {props.setState(props.query); props.setComponents(<Text style={{borderColor: 'black', borderWidth: 5}}>{props.query}</Text>); Keyboard.dismiss();}}
+      onPress={() => {
+        props.setState(props.query);
+        props.setState(<Text style={{borderColor: 'black', borderWidth: 5}}>{props.query}</Text>);
+        Keyboard.dismiss();
+      }}
     >
       <View style={{width: '100%', flexDirection: 'row', borderColor: 'black', borderWidth: 0}}>
         <View style={{paddingLeft: 15, paddingRight: 5, alignItems: 'center', justifyContent: 'center'}}>
@@ -72,7 +92,10 @@ async function suggestedQueries(query, setState) {
   if (query == '')
     return;
   var api_url = "http://suggestqueries.google.com/complete/search?output=firefox&q=" + query;
-  var queries = await fetch(api_url).then(response => response.json()).then(json => json[1]).catch((error) => console.error('Error: ', error));
+  var queries = await fetch(api_url)
+    .then(response => response.json())
+    .then(json => json[1])
+    .catch((error) => console.error('Error: ', error));
   setState(queries);
 }
 
@@ -143,3 +166,186 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
   }
 });
+
+const searchQueries = {
+  "kind": "youtube#searchListResponse",
+  "etag": "Qe5eD-VkO9Lz33jfwvn3Fpno0Uc",
+  "nextPageToken": "CAUQAA",
+  "regionCode": "US",
+  "pageInfo": {
+    "totalResults": 1000000,
+    "resultsPerPage": 5
+  },
+  "items": [
+    {
+      "kind": "youtube#searchResult",
+      "etag": "1Tgb7GX9fxmNCLpdF6w58ymm4gQ",
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "pJ_d6zzzCQE"
+      },
+      "snippet": {
+        "publishedAt": "2022-07-07T11:00:26Z",
+        "channelId": "UCzcQOTuXYGuCvTekySb_CeQ",
+        "title": "This Is Why Surfers Love Uluwatu",
+        "description": "With a good sized swell, not too much variation in the tide and an offshore wind that blew from dawn to dusk - there were plenty of ...",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/pJ_d6zzzCQE/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/pJ_d6zzzCQE/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/pJ_d6zzzCQE/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          }
+        },
+        "channelTitle": "Surfers of Bali",
+        "liveBroadcastContent": "none",
+        "publishTime": "2022-07-07T11:00:26Z"
+      }
+    },
+    {
+      "kind": "youtube#searchResult",
+      "etag": "6eIMPD9YSTUq-Dq7cpE0CY0KSvw",
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "gzJPnHAcAow"
+      },
+      "snippet": {
+        "publishedAt": "2022-07-06T21:45:30Z",
+        "channelId": "UC_F4Iy5korq2mEWZDQhG07w",
+        "title": "Is this the best place for a surf trip?! Nonstop barrels! Fiji Pt. 3",
+        "description": "Probably the best place you could ever go on a surf trip, Tavarua island in Fiji! This was such a good trip, Honestly one of the best ...",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/gzJPnHAcAow/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/gzJPnHAcAow/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/gzJPnHAcAow/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          }
+        },
+        "channelTitle": "Koa Rothman",
+        "liveBroadcastContent": "none",
+        "publishTime": "2022-07-06T21:45:30Z"
+      }
+    },
+    {
+      "kind": "youtube#searchResult",
+      "etag": "pp7yqX45H8Mr81m50XbmmcS1Yhk",
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "c6lU-xYRjFA"
+      },
+      "snippet": {
+        "publishedAt": "2022-03-28T18:58:35Z",
+        "channelId": "UC--3c8RqSfAqYBdDjIG3UNA",
+        "title": "The World Loves Surfing | Best Of Red Bull Surfing 2021",
+        "description": "What a year. 2021 was packed to the gills with everything the surfing world has to offer. Whether it be world title races, the biggest ...",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/c6lU-xYRjFA/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/c6lU-xYRjFA/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/c6lU-xYRjFA/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          }
+        },
+        "channelTitle": "Red Bull Surfing",
+        "liveBroadcastContent": "none",
+        "publishTime": "2022-03-28T18:58:35Z"
+      }
+    },
+    {
+      "kind": "youtube#searchResult",
+      "etag": "3b0uAJv_I_QOfYbqUs7R4cryzLU",
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "ma67yOdMQfs"
+      },
+      "snippet": {
+        "publishedAt": "2021-01-23T17:00:15Z",
+        "channelId": "UC--3c8RqSfAqYBdDjIG3UNA",
+        "title": "These Were The All-Time Surfing Moments Of The Year | Best Of 2020",
+        "description": "Well, that was a weird ride. Though it hasn't been easy, at least when we fixed our gaze on the ocean — or favorite place in the ...",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/ma67yOdMQfs/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/ma67yOdMQfs/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/ma67yOdMQfs/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          }
+        },
+        "channelTitle": "Red Bull Surfing",
+        "liveBroadcastContent": "none",
+        "publishTime": "2021-01-23T17:00:15Z"
+      }
+    },
+    {
+      "kind": "youtube#searchResult",
+      "etag": "QVWMfuQ9zfWH7qUduP3kaMkjHUM",
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "eSWST13stO4"
+      },
+      "snippet": {
+        "publishedAt": "2022-03-27T15:00:32Z",
+        "channelId": "UCVo06dBGK9VBBhq15wJxZHQ",
+        "title": "🔵4k (ASMR) 10 Hour Store Loop - Hawaii Surfing - With Relaxing Music☑️",
+        "description": "Waves of the World Filmers: Chris Kincade: https://www.instagram.com/chriskincade.wotw Andre Botha: ...",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/eSWST13stO4/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/eSWST13stO4/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/eSWST13stO4/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          }
+        },
+        "channelTitle": "Chris Kincade Media - Waves of the World ",
+        "liveBroadcastContent": "none",
+        "publishTime": "2022-03-27T15:00:32Z"
+      }
+    }
+  ]
+}

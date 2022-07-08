@@ -3,9 +3,6 @@ import { StyleSheet, View, Text, Image, TouchableHighlight } from 'react-native'
 import { API_URL, API_KEY } from '../credentials/api_cred';
 
 export default function VideoCard(props) {
-  const title = "what do you want?💦";
-  const channel_title = "Muichirou XIV";
-  const profile = 'https://yt3.ggpht.com/ytc/AKedOLSJP9i2nzpXZNqzLrWQQzngVPY1dm3G_zwHUcvT_w=s88-c-k-c0x00ffffff-no-rj';
   const [ channelInfo, setChannelInfo ] = useState({});
   useEffect(() => {
     fetchChannel(props.channelId, setChannelInfo);
@@ -36,11 +33,13 @@ export default function VideoCard(props) {
 }
 
 async function fetchChannel(channelId, setState) {
+  console.log('fetching channel');
   var api_url = API_URL
     + 'channels?part=snippet%2CcontentDetails%2Cstatistics&id=' + channelId + '&key='
     + API_KEY;
   var queries = await fetch(api_url).then(response => response.json()).then(json => json['items'][0]);
   setState(queries);
+  console.log(channelId);
 }
 
 function VideoInfo(props) {
@@ -59,6 +58,24 @@ function VideoInfo(props) {
           </Text>
         </View>
       </View>
+  );
+}
+
+export function MappedCards(jsonArray) {
+  return (
+    <View>
+      {jsonArray.map((video, index) => 
+        <VideoCard
+          key={index}
+          thumbnail={video['snippet']['thumbnails']['high']['url']}
+          title={video['snippet']['title']}
+          channel={video['snippet']['channelTitle']}
+          channelId={video['snippet']['channelId']}
+          views={video['statistics']['viewCount']}
+          date={video['snippet']['publishedAt']}
+        />
+      )}
+    </View>
   );
 }
 
