@@ -12,7 +12,7 @@ export default function VideoCard(props) {
       style={{paddingBottom: 12}}
       activeOpacity={1}
       underlayColor="#DDDDDD"
-      onPress={() => {}}
+      onPress={() => props.onPress()}
     >
       <View>
         <Image
@@ -59,11 +59,12 @@ function VideoInfo(props) {
   );
 }
 
-export function MappedCards(jsonArray) {
+export function MappedCards(jsonArray, onPress) {
   return (
     <View>
       {jsonArray.map((video, index) => 
         <VideoCard
+          onPress={() => onPress(video['id'])}
           key={index}
           thumbnail={video['snippet']['thumbnails']['high']['url']}
           title={video['snippet']['title']}

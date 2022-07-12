@@ -13,7 +13,9 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     fetchTrending(setTrending, tokenArray, setTokenArray, pageToken, setPageToken);
   }, []);
-  const trendingPage = MappedCards(trending);
+  const trendingPage = MappedCards(trending,
+    (source) => navigation.navigate('Video', {source: source})
+  );
   return (
     <SafeAreaView style={GLOBAL_STYLES.safeareaview}>
       <Header

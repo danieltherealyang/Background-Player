@@ -9,6 +9,7 @@ import LibraryScreen from '../screens/LibraryScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 //Other
 import SearchScreen from '../screens/SearchScreen';
+import VideoScreen from '../screens/VideoScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ export default function Navigation() {
       <Stack.Navigator>
         <Stack.Screen name="BottomTab" component={BottomNavigationBar} options={{headerShown: false}}/>
         <Stack.Screen name="Search" component={SearchScreen} options={{headerShown: false}}/>
+        <Stack.Screen name="Video" component={VideoScreen} options={{headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

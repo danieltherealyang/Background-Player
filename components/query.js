@@ -5,13 +5,11 @@ function clearQuery(setTokenArray, setPageToken) {
   setPageToken('');
 }
 
-async function fetchQuery(query, setState, tokenArray, setTokenArray, pageToken, setPageToken, clearQuery=false) {
-  if (query == '')
+async function fetchTemplate(url, setState, tokenArray, setTokenArray, pageToken, setPageToken, clearQuery) {
+  if (url == '')
     return;
-  var searchlist_url = API_URL
-    + 'search?part=snippet&maxResults=25'
-    + '&q=' + query
-    + '&key=' + API_KEY;
+  var searchlist_url = url;
+  console.log(searchlist_url);
   if (pageToken) {
     if (tokenArray.has(pageToken))
       return;
@@ -32,7 +30,22 @@ async function fetchQuery(query, setState, tokenArray, setTokenArray, pageToken,
     else
       return prevState.concat(json['items']);
   });
-  console.log(pageToken);
 }
 
-export { clearQuery, fetchQuery };
+async function fetchQuery(query, setState, tokenArray, setTokenArray, pageToken, setPageToken, clearQuery=false) {
+  var searchlist_url = API_URL
+    + 'search?part=snippet&type=video&maxResults=25'
+    + '&q=' + query
+    + '&key=' + API_KEY;
+  await fetchTemplate(searchlist_url, setState, tokenArray, setTokenArray, pageToken, setPageToken, clearQuery);
+}
+
+async function fetchRelated(videoId, setState, tokenArray, setTokenArray, pageToken, setPageToken, clearQuery=false) {
+  var searchlist_url = API_URL
+    + 'search?part=snippet&type=video&maxResults=25'
+    + '&relatedToVideoId=' + videoId
+    + '&key=' + API_KEY;
+  await fetchTemplate(searchlist_url, setState, tokenArray, setTokenArray, pageToken, setPageToken, clearQuery);
+}
+
+export { clearQuery, fetchQuery, fetchRelated };

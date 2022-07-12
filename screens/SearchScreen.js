@@ -6,14 +6,16 @@ import { GLOBAL_STYLES, BOTTOM_SCROLL_PADDING } from '../components/constant';
 import { fetchQuery } from '../components/query';
 
 export default function SearchScreen({ route, navigation }) {
+  console.log('Search Screen rendering');
   const {backScreen} = route.params;
   const scrollRef = useRef();
   const [ query, setQuery ] = useState("");
   const [ queryList, setQueryList ] = useState([]);
   const [ tokenArray, setTokenArray ] = useState(new Set());
   const [ pageToken, setPageToken ] = useState("");
-  console.log('Search Screen rendering');
-  const videoCards = MappedCards(queryList);
+  const videoCards = MappedCards(queryList,
+    (source) => navigation.navigate('Video', {source: source})
+  );
   return (
     <SafeAreaView style={GLOBAL_STYLES.safeareaview}>
       <SearchBar

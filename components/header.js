@@ -27,6 +27,7 @@ export default function Header(props) {
         transform: [
           {translateY: translateY}
         ],
+        backgroundColor: 'white',
         borderBottomColor: GRAY, borderBottomWidth: 1,
         paddingTop: PADDING,
         paddingBottom: PADDING,

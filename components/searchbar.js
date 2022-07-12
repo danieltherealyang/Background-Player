@@ -18,6 +18,7 @@ export default function SearchBar(props) {
   return (
     <View style={{
       width: "100%",
+      backgroundColor: 'white',
       borderBottomColor: GRAY, borderBottomWidth: 1,
       paddingTop: PADDING,
       paddingBottom: PADDING
