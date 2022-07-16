@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Image, TouchableHighlight } from 'react-native';
 import { API_URL, API_KEY } from '../credentials/api_cred';
+import { GLOBAL_STYLES } from './constant';
 
 export default function VideoCard(props) {
   const [ channelInfo, setChannelInfo ] = useState({});
   useEffect(() => {
     fetchChannel(props.channelId, setChannelInfo);
-  }, [props.channelId]);
+  }, []);
   return (
     <TouchableHighlight
       style={{paddingBottom: 12}}
       activeOpacity={1}
       underlayColor="#DDDDDD"
-      onPress={() => props.onPress()}
+      onPress={() => props.onPress(channelInfo['snippet']['thumbnails']['default']['url'], channelInfo['statistics']['subscriberCount'])}
     >
       <View>
         <Image
@@ -36,7 +37,7 @@ async function fetchChannel(channelId, setState) {
   var api_url = API_URL
     + 'channels?part=snippet%2CcontentDetails%2Cstatistics&id=' + channelId + '&key='
     + API_KEY;
-  var queries = await fetch(api_url).then(response => response.json()).then(json => json['items'][0]);
+  var queries = await fetch(api_url).then(response => response.json()).then(json => json['items'][0]).catch(err => '');
   setState(queries);
 }
 
@@ -48,10 +49,10 @@ function VideoInfo(props) {
           source={{uri: props.profile}}
         />
         <View style={{flex: 1, paddingLeft: 12}}>
-          <Text style={styles.title} numberOfLines={2} ellipSizeMode="tail">
+          <Text style={GLOBAL_STYLES.title} numberOfLines={2} ellipSizeMode="tail">
             {props.title}
           </Text>
-          <Text style={styles.info} numberOfLines={2} ellipSizeMode="tail">
+          <Text style={GLOBAL_STYLES.info} numberOfLines={2} ellipSizeMode="tail">
             {props.channel + ' • ' + props.views + ' • ' + props.date}
           </Text>
         </View>
@@ -64,7 +65,8 @@ export function MappedCards(jsonArray, onPress) {
     <View>
       {jsonArray.map((video, index) => 
         <VideoCard
-          onPress={() => onPress(video['id'])}
+          onPress={(profile, subscribers) => 
+            onPress(video['id'], video['snippet']['title'], video['statistics']['viewCount'], video['snippet']['publishedAt'], profile, video['snippet']['channelTitle'], subscribers, video['snippet']['description'], video['snippet']['thumbnails']['high']['url'])}
           key={index}
           thumbnail={video['snippet']['thumbnails']['high']['url']}
           title={video['snippet']['title']}
@@ -83,16 +85,5 @@ const styles = StyleSheet.create({
     width: '100%',
     height: undefined,
     aspectRatio: 16/9,
-  },
-  title: {
-    flex: 1,
-    flexWrap: 'wrap',
-    fontSize: 16,
-  },
-  info: {
-    flex: 1,
-    flexWrap: 'wrap',
-    fontSize: 13,
-    color: '#6b6b6b',
   },
 });

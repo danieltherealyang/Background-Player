@@ -17,6 +17,7 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "scheme": "app.verygoodplayer.vgp",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "app.VeryGoodPlayer.VGP"

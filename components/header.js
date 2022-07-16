@@ -55,6 +55,7 @@ export default function Header(props) {
           {props.children}
         </View>
       </Animated.ScrollView>
+      {props.minicard}
     </View>
   );
 }

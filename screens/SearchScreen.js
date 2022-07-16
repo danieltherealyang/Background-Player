@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react';
-import { SafeAreaView, View, Text, ScrollView } from 'react-native';
+import { SafeAreaView, ScrollView } from 'react-native';
 import SearchBar from '../components/searchbar';
 import { MappedCards } from '../components/videocard';
 import { GLOBAL_STYLES, BOTTOM_SCROLL_PADDING } from '../components/constant';
 import { fetchQuery } from '../components/query';
+import VideoScreen from './VideoScreen';
+import MiniCard from '../components/minicard';
 
 export default function SearchScreen({ route, navigation }) {
   console.log('Search Screen rendering');
@@ -13,11 +15,31 @@ export default function SearchScreen({ route, navigation }) {
   const [ queryList, setQueryList ] = useState([]);
   const [ tokenArray, setTokenArray ] = useState(new Set());
   const [ pageToken, setPageToken ] = useState("");
+  const [ modalVisible, setModalVisible ] = useState(false);
+  const [ videoData, setVideoData ] = useState({});
+  const [ dismissed, setDismissed ] = useState(true);
+  const [ thumbnail, setThumbnail ] = useState(null);
   const videoCards = MappedCards(queryList,
-    (source) => navigation.navigate('Video', {source: source})
+    (source, title, views, date, profile, channel, subscribers, description, thumbnail) => {
+      setModalVisible(true);
+      setDismissed(false);
+      setVideoData({
+        source: source,
+        title: title,
+        views: views,
+        date: date,
+        profile: profile,
+        channel: channel,
+        subscribers: subscribers,
+        description: description,
+      });
+      setThumbnail(thumbnail);
+    }
   );
+  const videoScreen = (!dismissed) ? <VideoScreen data={videoData} setData={setVideoData} setThumbnail={setThumbnail} modalVisible={modalVisible} setModalVisible={setModalVisible}/> : null;
   return (
     <SafeAreaView style={GLOBAL_STYLES.safeareaview}>
+      {videoScreen}
       <SearchBar
         query={query}
         setQuery={setQuery}
@@ -30,6 +52,7 @@ export default function SearchScreen({ route, navigation }) {
         scrollRef={scrollRef}
       />
       <ScrollView
+        style={{flexGrow: 1}}
         ref={scrollRef}
         onScroll={
           (event) => {
@@ -40,9 +63,11 @@ export default function SearchScreen({ route, navigation }) {
           }
         }
         scrollEventThrottle={16}
+        zIndex={1}
       >
         {videoCards}
       </ScrollView>
+      <MiniCard title={videoData['title']} thumbnail={thumbnail} dismissed={dismissed} setModalVisible={setModalVisible} setDismissed={setDismissed}/>
     </SafeAreaView>
   );
 }

@@ -15,6 +15,11 @@ export default function SearchBar(props) {
     fetchQuery('', props.setState, props.tokenArray, props.setTokenArray, props.pageToken, props.setPageToken);
   }, []);
   const backHandle = (barFocused) ? () => {Keyboard.dismiss()} : props.backHandle;
+  const searchHandle = (query) => {
+    clearQuery(props.setTokenArray, props.setPageToken);
+    fetchQuery(query, props.setState, props.tokenArray, props.setTokenArray, props.pageToken, props.setPageToken, true);
+    props.scrollRef.current?.scrollTo({ y: 0, animated: false});
+  };
   return (
     <View style={{
       width: "100%",
@@ -32,19 +37,18 @@ export default function SearchBar(props) {
           backHandle={backHandle} 
           searchHandle={() => {}} 
           closeHandle={() => props.setQuery("")}
+          onSubmitEditing={() => {
+            props.setQuery(props.query);
+            searchHandle(props.query);
+            Keyboard.dismiss();
+          }}
         />
         <View>
           {barFocused && querySuggest.map((suggestion, index) => 
             <QueryRow
               key={index}
               query={suggestion}
-              onPress={
-                () => {
-                  clearQuery(props.setTokenArray, props.setPageToken);
-                  fetchQuery(suggestion, props.setState, props.tokenArray, props.setTokenArray, props.pageToken, props.setPageToken, true);
-                  props.scrollRef.current?.scrollTo({ y: 0, animated: false});
-                }
-              }
+              onPress={() => searchHandle(suggestion)}
               setQueryList={props.setQueryList} 
               setState={props.setQuery} 
               length={props.query.length}
@@ -104,7 +108,6 @@ async function suggestedQueries(query, setState) {
     .then(response => response.json())
     .then(json => setState(json[1]))
     .catch((error) => console.log(error));
-  console.log(api_url);
 }
 
 function StaticHeader(props) {
@@ -126,7 +129,16 @@ function StaticHeader(props) {
       </View>
       <View style={styles.SearchBar}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TextInput autoFocus={true} onFocus={props.onFocus} onBlur={props.onBlur} style={{fontSize: fontSize, flexGrow: 1, paddingTop: 7, paddingBottom: 7, paddingLeft: 8}} value={props.textValue} onChangeText={(text) => {props.setQuery(text)}}/>
+          <TextInput
+            returnKeyType={'search'}
+            onSubmitEditing={() => props.onSubmitEditing()}
+            autoFocus={true}
+            onFocus={props.onFocus}
+            onBlur={props.onBlur}
+            style={{fontSize: fontSize, flexGrow: 1, paddingTop: 7, paddingBottom: 7, paddingLeft: 8}}
+            value={props.textValue}
+            onChangeText={(text) => {props.setQuery(text)}}
+          />
           <TouchableHighlight
             style={[{alignItems: 'center', justifyContent: 'center'}, crossVisible]}
             activeOpacity={0.6}
