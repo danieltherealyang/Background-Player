@@ -36,7 +36,7 @@ export default function Login(props) {
               <Button
                 title={'SIGN IN'}
                 color={'white'}
-                onPress={() => promptAsync({useProxy: false, showInRecents: true})}
+                onPress={() => promptAsync({useProxy: true, showInRecents: true})}
               />
             </View>
           </View>
