@@ -1,7 +1,7 @@
 # Youtube Background Player
 The Very Good Player is a mobile app that allows you to browse and play Youtube videos with background play capabilities. UI was based on the Youtube app. Code was written in React Native
 ## Demo
-![demo](./.images/demo.mp4)
+![demo](https://www.youtube.com/watch?v=nB_s79lHSVs)
 ## Features
 - **Technologies**: React Native, Expo, Node.js
 - **Authentication**: sign in/out using Google account
