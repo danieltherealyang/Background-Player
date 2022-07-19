@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Keyboard, StyleSheet, View, Text, TextInput, TouchableHighlight } from 'react-native';
 import Icon from '@expo/vector-icons/Ionicons';
-import { PADDING, GRAY } from './constant';
+import { PADDING, GRAY, PADDING_BOTTOM } from './constant';
 import { clearQuery, fetchQuery } from './query';
 
 export default function SearchBar(props) {
-  const HEADER_HEIGHT = 40;
   const [ querySuggest, setQuerySuggest ] = useState([]);
   const [ barFocused, setBarFocused ] = useState(false);
   useEffect(() => {
@@ -169,7 +168,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    paddingBottom: 3,
+    paddingBottom: PADDING_BOTTOM,
   },
   SearchBar: {
     flexGrow: 1,

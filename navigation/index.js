@@ -11,6 +11,7 @@ import LibraryScreen from '../screens/LibraryScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 //Other
 import SearchScreen from '../screens/SearchScreen';
+import VideoListScreen from '../screens/VideoListScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +21,7 @@ export default function Navigation() {
       <Stack.Navigator>
         <Stack.Screen name="BottomTab" component={BottomNavigationBar} options={{headerShown: false}}/>
         <Stack.Screen name="Search" component={SearchScreen} options={{headerShown: false}}/>
+        <Stack.Screen name="VideoList" component={VideoListScreen} options={{headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -32,7 +34,11 @@ function BottomNavigationBar() {
   const iconSize = 25;
   return (
     <AccessTokenContext.Provider value={{accessToken, setAccessToken}}>
-      <BottomTab.Navigator>
+      <BottomTab.Navigator
+        screenOptions={{
+          tabBarStyle: {paddingTop: 5, paddingBottom: 5}
+        }}
+      >
         <BottomTab.Screen
           name="Home"
           component={HomeScreen}

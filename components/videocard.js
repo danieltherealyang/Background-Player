@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Image, TouchableHighlight } from 'react-native';
 import { API_URL, API_KEY } from '../credentials/api_cred';
 import { GLOBAL_STYLES } from './constant';
+import { getDateTime, getDTdiff, getShortNum } from './etc';
 
 export default function VideoCard(props) {
   const [ channelInfo, setChannelInfo ] = useState({});
@@ -53,7 +54,7 @@ function VideoInfo(props) {
             {props.title}
           </Text>
           <Text style={GLOBAL_STYLES.info} numberOfLines={2} ellipSizeMode="tail">
-            {props.channel + ' • ' + props.views + ' • ' + props.date}
+            {props.channel + ' • ' + getShortNum(props.views) + ' views' + ' • ' + getDTdiff(props.date, getDateTime()) + ' ago'}
           </Text>
         </View>
       </View>
@@ -61,22 +62,18 @@ function VideoInfo(props) {
 }
 
 export function MappedCards(jsonArray, onPress) {
-  return (
-    <View>
-      {jsonArray.map((video, index) => 
-        <VideoCard
-          onPress={(profile, subscribers) => 
-            onPress(video['id'], video['snippet']['title'], video['statistics']['viewCount'], video['snippet']['publishedAt'], profile, video['snippet']['channelTitle'], subscribers, video['snippet']['description'], video['snippet']['thumbnails']['high']['url'])}
-          key={index}
-          thumbnail={video['snippet']['thumbnails']['high']['url']}
-          title={video['snippet']['title']}
-          channel={video['snippet']['channelTitle']}
-          channelId={video['snippet']['channelId']}
-          views={video['statistics']['viewCount']}
-          date={video['snippet']['publishedAt']}
-        />
-      )}
-    </View>
+  return jsonArray.map((video, index) => 
+    <VideoCard
+      onPress={(profile, subscribers) => 
+        onPress(video['id'], video['snippet']['title'], video['statistics']['viewCount'], video['snippet']['publishedAt'], profile, video['snippet']['channelTitle'], subscribers, video['snippet']['description'], video['snippet']['thumbnails']['high']['url'], index)}
+      key={index}
+      thumbnail={video['snippet']['thumbnails']['high']['url']}
+      title={video['snippet']['title']}
+      channel={video['snippet']['channelTitle']}
+      channelId={video['snippet']['channelId']}
+      views={video['statistics']['viewCount']}
+      date={video['snippet']['publishedAt']}
+    />
   );
 }
 

@@ -1,9 +1,8 @@
 import { StyleSheet, View, TouchableHighlight, Animated, Image } from 'react-native';
-import { HEADER_HEIGHT, PADDING, BOTTOM_SCROLL_PADDING, GRAY } from './constant';
+import { HEADER_HEIGHT, PADDING, BOTTOM_SCROLL_PADDING, GRAY, PADDING_BOTTOM } from './constant';
 import Icon from '@expo/vector-icons/Ionicons';
 
 export default function Header(props) {
-  console.log('header rendering');
   const minScroll = 2*HEADER_HEIGHT;
   const activeRange = 3*HEADER_HEIGHT;
   const scrollY = new Animated.Value(0);
@@ -30,11 +29,11 @@ export default function Header(props) {
         backgroundColor: 'white',
         borderBottomColor: GRAY, borderBottomWidth: 1,
         paddingTop: PADDING,
-        paddingBottom: PADDING,
+        paddingBottom: PADDING + PADDING_BOTTOM,
       }}>
         <StaticHeader searchHandle={props.searchHandle}/>
       </Animated.View>
-      <Animated.ScrollView style={{height: '100%', width: '100%', position: 'absolute', top: 0}} contentContainerStyle={{alignItems: 'center', paddingTop: HEADER_HEIGHT + 2*PADDING}}
+      <Animated.ScrollView style={{height: '100%', width: '100%', position: 'absolute', top: 0}} contentContainerStyle={{alignItems: 'center', paddingTop: HEADER_HEIGHT + 2*PADDING + PADDING_BOTTOM}}
         onScroll = {Animated.event(
           [{nativeEvent: {contentOffset: {y: scrollY}}}],
           {

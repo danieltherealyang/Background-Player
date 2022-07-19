@@ -2,14 +2,12 @@ import { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView, View, Text } from 'react-native';
 import { MappedCards } from '../components/videocard';
 import Header from '../components/header';
-import { GLOBAL_STYLES } from '../components/constant';
+import { FETCH_HEADER, GLOBAL_STYLES } from '../components/constant';
 import { API_URL, API_KEY } from '../credentials/api_cred';
-import { fakeData } from '../components/query';
 import VideoScreen from './VideoScreen';
 import MiniCard from '../components/minicard';
 
 export default function HomeScreen({ navigation }) {
-  console.log('Home Screen rendering');
   const [ trending, setTrending ] = useState([]);
   const [ tokenArray, setTokenArray ] = useState(new Set());
   const [ pageToken, setPageToken ] = useState("");
@@ -43,7 +41,7 @@ export default function HomeScreen({ navigation }) {
       {videoScreen}
       <Header
         searchHandle={() => navigation.navigate("Search", {backScreen: "Home"})}
-        onBottomScroll={() => {}}//fetchTrending(setTrending, tokenArray, setTokenArray, pageToken, setPageToken)}
+        onBottomScroll={() => fetchTrending(setTrending, tokenArray, setTokenArray, pageToken, setPageToken)}
         minicard={
           <MiniCard 
             style={{position: 'absolute', bottom: 0, width: '100%'}}
@@ -61,19 +59,18 @@ export default function HomeScreen({ navigation }) {
 }
 
 async function fetchTrending(setState, tokenArray, setTokenArray, pageToken, setPageToken) {
-  // var api_url = API_URL
-  //   + 'videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&regionCode=US&maxResults=10&key='
-  //   + API_KEY;
-  // if (pageToken) {
-  //   if (tokenArray.has(pageToken))
-  //     return;
-  //   api_url += '&pageToken=' + pageToken;
-  //   setTokenArray(tokenArray.add(pageToken));
-  // }
-  // var json = await fetch(api_url).then(response => response.json());
-  // setState((prevState) => prevState.concat(json['items']));
-  // setPageToken(json['nextPageToken']);
-  setState((prevState) => prevState.concat(fakeData['items']));
+  var api_url = API_URL
+    + 'videos?part=snippet%2CcontentDetails%2Cstatistics&chart=mostPopular&regionCode=US&maxResults=10&key='
+    + API_KEY;
+  if (pageToken) {
+    if (tokenArray.has(pageToken))
+      return;
+    api_url += '&pageToken=' + pageToken;
+    setTokenArray(tokenArray.add(pageToken));
+  }
+  var json = await fetch(api_url, {headers: FETCH_HEADER}).then(response => response.json());
+  setState((prevState) => prevState.concat(json['items']));
+  setPageToken(json['nextPageToken']);
 }
 
 const styles = StyleSheet.create({

@@ -7,6 +7,7 @@ import { clearQuery, fetchRelated } from '../components/query';
 import { MappedCards } from '../components/videocard';
 import { BOTTOM_SCROLL_PADDING } from '../components/constant';
 import { GestureHandlerRootView, PanGestureHandler } from 'react-native-gesture-handler';
+import { getShortNum, getDTdiff, getDateTime, convertDate } from '../components/etc';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -16,10 +17,15 @@ export default function VideoScreen(props) {
   const [ queryList, setQueryList ] = useState([]);
   const [ tokenArray, setTokenArray ] = useState(new Set());
   const [ pageToken, setPageToken ] = useState("");
+  const fetchfn = (source, setQueryList, tokenArray, setTokenArray, pageToken, setPageToken, clearQuery=false) => {
+    (props.fetchfn) ? props.fetchfn(source, setQueryList, tokenArray, setTokenArray, pageToken, setPageToken, clearQuery)
+    : fetchRelated(source, setQueryList, tokenArray, setTokenArray, pageToken, setPageToken, clearQuery);
+  };
   useEffect(() => {
-    fetchRelated(source, setQueryList, tokenArray, setTokenArray, pageToken, setPageToken);
+    fetchfn(source, setQueryList, tokenArray, setTokenArray, pageToken, setPageToken);
   }, []);
-  const videoCards = MappedCards(queryList,
+  const videoCards = (props.videoCards) ? props.videoCards : 
+  MappedCards(queryList,
     (source, title, views, date, profile, channel, subscribers, description, thumbnail) => {
       props.setData({
         source: source,
@@ -33,7 +39,7 @@ export default function VideoScreen(props) {
       });
       props.setThumbnail(thumbnail);
       clearQuery(setTokenArray, setPageToken);
-      fetchRelated(source, setQueryList, tokenArray, setTokenArray, pageToken, setPageToken, true);
+      fetchfn(source, setQueryList, tokenArray, setTokenArray, pageToken, setPageToken, true);
       scrollRef.current?.scrollTo({ y: 0, animated: false});
     }
   );
@@ -62,7 +68,7 @@ export default function VideoScreen(props) {
               (event) => {
                 let maxOffset = event.nativeEvent.contentSize.height - event.nativeEvent.layoutMeasurement.height;
                 if (event.nativeEvent.contentOffset.y >= maxOffset + BOTTOM_SCROLL_PADDING) {
-                  fetchRelated(source, setQueryList, tokenArray, setTokenArray, pageToken, setPageToken);
+                  fetchfn(source, setQueryList, tokenArray, setTokenArray, pageToken, setPageToken);
                 }
               }
             }
@@ -78,7 +84,9 @@ export default function VideoScreen(props) {
               description={description}
             />
             <Text style={{padding: 12}}>Up Next</Text>
-            {videoCards}
+            <View>
+              {videoCards}
+            </View>
           </ScrollView>
         </View>
       </Modal>
@@ -115,7 +123,7 @@ function VideoInfo(props) {
       <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
         <View style={{flexGrow: 1}}>
           <Text style={GLOBAL_STYLES.titlenf} numberOfLines={2} ellipSizeMode="tail">{props.title}</Text>
-          <Text style={GLOBAL_STYLES.infonf} numberOfLines={2} ellipSizeMode="tail">{props.views + ' • ' + props.date}</Text>
+          <Text style={[GLOBAL_STYLES.infonf, {fontWeight: '600'}]} numberOfLines={2} ellipSizeMode="tail">{getShortNum(props.views) + ' views' + ' • ' + convertDate(props.date.split('T')[0])}</Text>
         </View>
         <Icon name='chevron-down-outline' size={24}/>
       </View>
@@ -133,7 +141,7 @@ function ChannelInfo(props) {
         />
         <View style={{flex: 1, paddingLeft: 12}}>
           <Text style={GLOBAL_STYLES.titlenf}>{props.channel}</Text>
-          <Text style={GLOBAL_STYLES.infonf}>{props.subscribers}</Text>
+          <Text style={GLOBAL_STYLES.infonf}>{getShortNum(props.subscribers) + ' subscribers'}</Text>
         </View>
       </View>
     </View>  

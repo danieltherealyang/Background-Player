@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 
 const HEADER_HEIGHT = 40;
 const PADDING = 5;
+const PADDING_BOTTOM = 3;
 const BOTTOM_SCROLL_PADDING = 10;
 const GLOBAL_STYLES = StyleSheet.create({
   safeareaview: {
@@ -41,4 +42,11 @@ const AccessTokenContext = createContext({
   setAccessToken: () => {}
 });
 
-export { HEADER_HEIGHT, PADDING, GLOBAL_STYLES, BOTTOM_SCROLL_PADDING, GRAY, AccessTokenContext };
+const FETCH_THROTTLE = 500;
+
+const FETCH_HEADER = {
+  "Accept-Encoding": "gzip",
+  "User-Agent": "VGP (gzip)",
+};
+
+export { HEADER_HEIGHT, PADDING, PADDING_BOTTOM, GLOBAL_STYLES, BOTTOM_SCROLL_PADDING, GRAY, AccessTokenContext, FETCH_THROTTLE, FETCH_HEADER };
